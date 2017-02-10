@@ -12,10 +12,10 @@ const querystring = require('querystring');
 
 require('es7-object-polyfill')
 
-if (process.env.NODE_ENV === 'production') {
+/*if (process.env.NODE_ENV === 'production') {
   console.error('\x1b[31mDo not run this in production!') // red
   process.exit(1)
-}
+}*/
 
 const app = express()
 app.set('json spaces', 2)
