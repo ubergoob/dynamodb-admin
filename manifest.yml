@@ -1,0 +1,7 @@
+---
+applications:
+- name: dynamodb_admin 
+  memory: 256M
+  host: dynamodb_admin
+  command: node index.js
+  buildpack: nodejs_buildpack

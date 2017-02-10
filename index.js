@@ -22,13 +22,17 @@ app.set('json spaces', 2)
 app.set('view engine', 'ejs')
 app.set('views', path.resolve(__dirname, 'views'))
 
-AWS.config.update({
+awsConfig     = require('./awsconfigsetup');
+var awsConf = awsConfig.load_config();
+AWS.config.update(awsConf);
+
+/*AWS.config.update({
   accessKeyId: process.env.AWS_ACCESS_KEY_ID || 'key',
   secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY || 'secret',
   endpoint: process.env.DYNAMO_ENDPOINT || 'http://localhost:8000',
   sslEnabled: process.env.DYNAMO_ENDPOINT && process.env.DYNAMO_ENDPOINT.indexOf('https://') === 0,
   region: process.env.AWS_REGION || 'us-east-1'
-})
+})*/
 
 const dynamodb = new AWS.DynamoDB()
 const docClient = new AWS.DynamoDB.DocumentClient()
@@ -43,10 +47,7 @@ app.use(errorhandler())
 app.use('/assets', express.static(path.join(__dirname, '/public')))
 
 app.get('/', (req, res) => {
-  dynamodb.listTables({}, (error, data) => {
-    if (error) {
-      res.json({error})
-    } else {
+  var data = awsConf.tables;
       Promise.all(data.TableNames.map((TableName) => {
         return describeTable({TableName}).then((data) => data.Table)
       })).then((data) => {
@@ -54,8 +55,6 @@ app.get('/', (req, res) => {
       }).catch((error) => {
         res.json({error})
       })
-    }
-  })
 })
 
 app.get('/create-table', (req, res) => {
